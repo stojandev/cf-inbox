@@ -4,6 +4,13 @@
   "main": "./worker/index.ts",
   "compatibility_date": "2026-08-28",
   "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    // The local bypass also requires an HTTP loopback request. A deployed
+    // hostname always validates Access and fails closed while these are blank.
+    "APP_ENV": "development",
+    "ACCESS_TEAM_DOMAIN": "",
+    "ACCESS_AUD": ""
+  },
   "assets": {
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*"]

@@ -14,7 +14,7 @@ Delivered:
 - lint, typecheck, and test scripts
 - local environment documentation
 
-## Milestone 1 — production authentication
+## Milestone 1 — production authentication (complete)
 
 Deliver:
 - Cloudflare Access JWT validation

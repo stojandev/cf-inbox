@@ -20,8 +20,12 @@ Required:
 - verify audience
 - reject expired tokens
 - reject missing tokens in production
+- use the `Cf-Access-Jwt-Assertion` header rather than relying on the browser cookie
+- constrain the signing algorithm to RS256 and fetch keys only from the configured `*.cloudflareaccess.com` origin
 
 Do not implement username/password authentication in v1.
+
+The local bypass requires development mode, an HTTP request, and a loopback hostname. Missing or invalid Access configuration on any other origin returns an error before application routes run.
 
 ## Authorization
 

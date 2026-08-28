@@ -86,6 +86,21 @@ The Worker is responsible for:
 
 The Worker should remain mostly stateless.
 
+## Authentication flow
+
+Cloudflare Access protects the deployed hostname. The Worker also validates the signed `Cf-Access-Jwt-Assertion` header before serving any `/api/*` route.
+
+The backend:
+- validates the RS256 signature against the team JWKS endpoint
+- validates the configured issuer and application audience
+- rejects expired or not-yet-valid tokens
+- accepts only application tokens with a user subject and email claim
+- fails closed when Access configuration is missing or invalid
+
+The JWT verifier is an Effect service so cryptographic verification can be tested without network access. Hono only translates the typed authentication result into an HTTP response and exposes the verified identity to handlers.
+
+Local development bypasses Access only when all three conditions hold: `APP_ENV` is `development`, the request uses HTTP, and the hostname is loopback. A deployed HTTPS origin cannot activate this bypass even if the development variable is accidentally retained.
+
 ## Mailbox Durable Object
 
 v1 uses one logical mailbox Durable Object per deployment.

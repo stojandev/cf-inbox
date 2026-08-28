@@ -10,7 +10,7 @@ describe("Worker API", () => {
   it("runs the Effect bootstrap program through the HTTP boundary", async () => {
     const context = createExecutionContext();
     const response = await worker.fetch(
-      new Request("https://cf-inbox.test/api/health"),
+      new Request("http://localhost/api/health"),
       env,
       context,
     );
@@ -25,10 +25,28 @@ describe("Worker API", () => {
     });
   });
 
+  it("provides a local identity only on the local development origin", async () => {
+    const context = createExecutionContext();
+    const response = await worker.fetch(
+      new Request("http://localhost/api/me"),
+      env,
+      context,
+    );
+
+    await waitOnExecutionContext(context);
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      authentication: "local",
+      email: "developer@localhost",
+      subject: "local-development",
+    });
+  });
+
   it("returns a JSON 404 for unknown API routes", async () => {
     const context = createExecutionContext();
     const response = await worker.fetch(
-      new Request("https://cf-inbox.test/api/unknown"),
+      new Request("http://localhost/api/unknown"),
       env,
       context,
     );
