@@ -9,7 +9,6 @@
 - Durable Objects with SQLite
 - R2
 - Cloudflare Email Routing
-- Cloudflare Email Service
 - Cloudflare Access
 - `postal-mime` for inbound MIME parsing
 - `jose` where needed for Access JWT verification
@@ -19,9 +18,8 @@
 Effect belongs in the backend/core, especially for:
 - validated runtime configuration
 - typed domain and infrastructure errors
-- email receive/store/forward pipelines
+- email receive/store pipelines
 - R2 and Durable Object service boundaries
-- outbound send operations
 - retries, backoff, timeout and interruption
 - observability hooks
 - deterministic unit tests with test service implementations

@@ -4,7 +4,7 @@
 
 Small businesses and individuals often need a professional custom-domain email address but do not need a full Google Workspace, Microsoft 365, or iCloud mailbox subscription.
 
-For many deployments the dominant workload is receiving B2B messages. Sending is occasional.
+The product deliberately solves only the receive-and-read workflow.
 
 CF Inbox provides a lightweight Cloudflare-native inbox that can be deployed per client or domain.
 
@@ -21,13 +21,6 @@ CF Inbox provides a lightweight Cloudflare-native inbox that can be deployed per
 
 ```text
 partner -> person@company.com -> CF Inbox
-                              -> optional Gmail forward
-```
-
-When sending is required:
-
-```text
-CF Inbox -> Cloudflare Email Service -> recipient
 ```
 
 ## Product principles
@@ -49,14 +42,10 @@ After deployment, configuration should be limited to:
 - primary address
 - allowed aliases
 - Cloudflare Access
-- optional forwarding address
-- outbound sending toggle
 
-### Receive-first
+### Receive-only
 
-Receiving must work independently of sending.
-
-This allows deployments where Cloudflare Email Service is not enabled.
+v1 does not configure or depend on an outbound email provider. This keeps deployment and failure handling small.
 
 ### Portable deployment
 
@@ -68,35 +57,21 @@ A new client should be deployable from the same repository using configuration.
 
 ### Mailbox
 - Inbox
-- Sent
 - Archive
 - Trash
 - unread state
 - star / important marker
 - pagination
 - basic search
-- threads
 
 ### Message
 - safe HTML rendering
 - plain-text rendering
 - headers
 - attachments
-- Reply
-- Reply all
-- Forward
-
-### Compose
-- To
-- Cc
-- Bcc
-- Subject
-- plain text
-- attachments
 
 ### Operations
-- optional inbound forwarding
-- basic delivery error visibility
+- basic inbound processing error visibility
 - observability without email-content logging
 
 ## Explicit non-goals
@@ -112,3 +87,6 @@ A new client should be deployable from the same repository using configuration.
 - calendar / contacts
 - IMAP / POP
 - running our own SMTP infrastructure
+- outbound sending, Compose, Reply, and Forward
+- inbound forwarding to another mailbox
+- conversation threading

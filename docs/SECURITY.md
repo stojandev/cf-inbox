@@ -58,28 +58,6 @@ Requirements:
 - enforce maximum message/attachment sizes
 - never execute attachment content
 
-## Outbound abuse prevention
-
-v1 should include:
-- configured sender allowlist
-- recipient count limit
-- message size limit
-- attachment size limit
-- conservative send rate limit
-- no bulk send API
-- CSRF/same-origin protections where applicable
-
-## Forwarding
-
-Forwarding address must be configuration-controlled.
-
-Do not allow arbitrary per-message server-side forwarding destinations.
-
-If forwarding is enabled:
-- destination is configured by operator
-- validate configuration
-- avoid mail loops
-
 ## Logging
 
 Never log:
@@ -91,7 +69,7 @@ Never log:
 
 Allowed operational logs:
 - message internal ID
-- sender domain
+- sender domain or address hash where useful
 - recipient identity
 - operation result
 - size
@@ -102,7 +80,7 @@ Allowed operational logs:
 
 Secrets belong in Worker secrets / Cloudflare configuration.
 
-Never commit real domains, forwarding addresses, credentials, or API tokens.
+Never commit real domains, credentials, or API tokens.
 
 ## Database safety
 
@@ -133,9 +111,6 @@ Before v1 release:
 - malformed MIME
 - attachment filename traversal
 - oversized message
-- forwarding loop
 - unauthorized attachment access
 - Access JWT bypass
 - cross-origin API calls
-- send endpoint abuse
-- sender spoofing through Compose

@@ -18,11 +18,7 @@ Internet ------------> Cloudflare Email     |
                      |                      |
                      | parse / validate     |
                      | persist              |
-                     | optional forward     |
-                     +----+------------+----+
-                          |            |
-                          |            +----------> external inbox
-                          |                         e.g. Gmail
+                     +----+-----------------+
                           v
                   +----------------+
                   | MailboxDO      |
@@ -47,8 +43,6 @@ Hono API / Web app
    +------> MailboxDO
    |
    +------> authenticated attachment endpoint
-   |
-   +------> Cloudflare Email Service -> outbound mail
 ```
 
 ## Deployment boundary
@@ -61,7 +55,6 @@ Configuration identifies:
 - domain
 - primary address
 - optional aliases
-- optional forwarding destination
 
 This intentionally avoids the authorization complexity of a shared multi-tenant mailbox service.
 
@@ -73,7 +66,7 @@ Use Effect for:
 - typed domain/infrastructure errors
 - configuration validation
 - email processing pipelines
-- storage and outbound service boundaries
+- storage service boundaries
 - retries/timeouts where semantically appropriate
 - structured logging/tracing hooks
 
@@ -88,9 +81,7 @@ The Worker is responsible for:
 - inbound address validation
 - MIME parsing
 - message normalization
-- optional forwarding
 - routing operations to MailboxDO
-- outbound send requests
 - authenticated attachment streaming
 
 The Worker should remain mostly stateless.
@@ -122,20 +113,15 @@ Suggested entities:
 
 - id
 - internet_message_id
-- thread_id
 - folder
 - from_address
 - from_name
 - to_json
 - cc_json
-- bcc_json
 - subject
 - text_body
 - html_body
 - received_at
-- sent_at
-- in_reply_to
-- references_json
 - read
 - starred
 - has_attachments
@@ -180,30 +166,7 @@ R2 is private. Attachments are only retrieved through authenticated application 
 6. Sanitize filename metadata.
 7. Store attachments in R2.
 8. Store normalized message + attachment metadata atomically where practical.
-9. Optionally forward the original incoming message to the configured external mailbox.
-10. Return success only after durable storage has succeeded.
-
-## Outbound mail
-
-1. Authenticated user submits Compose/Reply.
-2. Validate sender identity against configured addresses.
-3. Validate recipient fields and message size.
-4. Construct MIME message.
-5. Add threading headers when replying.
-6. Send using Cloudflare Email Service.
-7. Persist Sent copy.
-8. Record delivery submission status.
-
-No bulk sending endpoints.
-
-## Reply threading
-
-Preserve:
-- Message-ID
-- In-Reply-To
-- References
-
-The UI thread identifier should be internal and separate from the Internet Message-ID.
+9. Return success only after durable storage has succeeded.
 
 ## Frontend
 
@@ -216,8 +179,6 @@ src/
   features/
     inbox/
     message/
-    compose/
-    settings/
   lib/
 workers/
   app.ts
@@ -240,6 +201,6 @@ Only add a dependency when it removes meaningful protocol/security complexity.
 
 ## Reference
 
-Cloudflare's official Agentic Inbox demonstrates the same core Cloudflare primitives: Email Routing, Hono/Workers, Durable Objects with SQLite, R2, Cloudflare Access, and Email Service.
+Cloudflare's official Agentic Inbox demonstrates the same core Cloudflare primitives: Email Routing, Hono/Workers, Durable Objects with SQLite, R2, and Cloudflare Access.
 
 CF Inbox deliberately removes the agent/AI layer and simplifies the trust model.

@@ -13,13 +13,10 @@ Do not turn this repository into a general-purpose email platform.
 Cloudflare's official `cloudflare/agentic-inbox` repository may be inspected as a reference for:
 
 - Email Routing Worker handling
-- Cloudflare Email Service bindings
 - Durable Object + SQLite mailbox storage
 - R2 attachment storage
 - Cloudflare Access validation
-- email threading
 - MIME parsing
-- reply / forward behavior
 
 Do **not** mechanically copy the project or preserve its agentic architecture.
 
@@ -36,11 +33,9 @@ The implementation in this repository should be independently structured around 
 7. Do not implement SMTP servers.
 8. Do not implement a MIME parser from scratch.
 9. Treat email HTML as untrusted input.
-10. Sending must be explicitly initiated by the authenticated user.
-11. Never expose R2 objects publicly.
-12. Never log full message bodies, credentials, Access JWTs, or attachment contents.
-13. Preserve threading headers correctly for replies.
-14. Keep receive-only mode functional when outbound email is not configured.
+10. Never expose R2 objects publicly.
+11. Never log full message bodies, credentials, Access JWTs, or attachment contents.
+12. Keep v1 receive-only; do not add outbound or forwarding infrastructure.
 
 ## Preferred stack
 
@@ -95,7 +90,5 @@ A clean deployment must allow an operator to:
 4. receive and persist a message
 5. safely render plain-text and sanitized HTML mail
 6. open and download an attachment through authenticated routes
-7. optionally forward incoming mail
-8. send a new message through Cloudflare Email Service
-9. reply with correct threading
-10. deploy another isolated instance without changing application code
+7. search stored messages
+8. deploy another isolated instance without changing application code

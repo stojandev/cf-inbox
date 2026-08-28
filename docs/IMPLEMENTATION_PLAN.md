@@ -1,172 +1,91 @@
 # Implementation Plan
 
-The coding agent should implement this in small verifiable milestones.
+Build only the lightweight receive-only v1 described in the product documentation. Outbound sending, reply/forward, inbound forwarding, multi-user features, and conversation threading are outside this plan.
 
-## Milestone 0 — repository bootstrap
+The coding agent should complete one small, verifiable milestone at a time. After each milestone: run relevant tests and typechecks, remove unnecessary complexity, update documentation when an architectural decision changes, and commit the completed milestone.
 
-Deliver:
+## Milestone 0 — repository bootstrap (complete)
+
+Delivered:
 - TypeScript
 - Effect configured for backend/core
-- Worker development environment
-- frontend development environment
-- Wrangler config template
-- lint/typecheck/test scripts
+- Worker and frontend development environment
+- Wrangler configuration
+- lint, typecheck, and test scripts
 - local environment documentation
-
-Acceptance:
-- local app loads
-- Worker API endpoint responds
-- a small Effect program executes through the Worker boundary
-- typecheck passes
 
 ## Milestone 1 — production authentication
 
-Implement Cloudflare Access validation first.
-
 Deliver:
-- Access JWT middleware
-- local-development bypass that cannot activate accidentally in production
+- Cloudflare Access JWT validation
 - fail-closed production behavior
-- authenticated `/api/me` or equivalent health path
+- explicit local-development bypass that cannot activate on a deployed hostname
+- authenticated `/api/me` endpoint
 
 Tests:
 - valid token
 - missing token
 - bad audience
 - expired token
-- invalid issuer
+- invalid issuer or signature
+- missing production configuration
 
-## Milestone 2 — Mailbox Durable Object
-
-Deliver:
-- singleton MailboxDO
-- SQLite schema
-- migrations
-- message CRUD primitives
-- folders: inbox, sent, archive, trash
-- read/unread
-- star
-- pagination
-
-Acceptance:
-- messages can be inserted/read/moved/deleted without email integration
-
-## Milestone 3 — inbound pipeline
+## Milestone 2 — receive and persist mail
 
 Deliver:
-- Email Routing handler
+- singleton Mailbox Durable Object
+- small, versioned SQLite schema and migrations
+- folders: Inbox, Archive, Trash
+- read/unread and star state
+- pagination and basic search
+- Cloudflare Email Routing handler
 - destination validation
-- MIME parsing using `postal-mime`
-- normalized message persistence
-- text and HTML body handling
-- threading metadata
-
-Tests should include real `.eml` fixtures.
-
-Acceptance:
-- test email appears in Inbox
-
-## Milestone 4 — attachments
-
-Deliver:
-- R2 storage
-- metadata table
-- authenticated download endpoint
-- safe filename handling
-- inline attachment metadata
+- MIME parsing with `postal-mime`
+- normalized text and HTML bodies
+- private R2 attachment storage and metadata
+- authenticated attachment download endpoint with safe filenames
+- real `.eml` test fixtures
 
 Acceptance:
-- inbound PDF/image attachment can be opened/downloaded only when authenticated
+- a test email, including an attachment, can be received, persisted, queried, moved, and downloaded only by an authenticated user
 
-## Milestone 5 — read-only inbox UI
+Keep the schema limited to fields required by the v1 UI. Do not add outbound, forwarding, or threading tables.
 
-Deliver:
-- navigation
-- inbox list
-- message reading pane
-- unread state
-- archive/trash
-- search
-- attachment display
-- responsive basic layout
-
-At this point the product is useful for receive-only deployments.
-
-## Milestone 6 — optional forwarding
+## Milestone 3 — minimal inbox UI
 
 Deliver:
-- operator-configured forwarding destination
-- forwarding toggle
-- forwarding loop protections
-- clear failure logging without content logging
+- Inbox, Archive, and Trash navigation
+- paginated message list
+- message reading view
+- safe plain-text and sanitized HTML rendering
+- read/unread and star actions
+- archive, trash, and permanent delete actions
+- basic search
+- authenticated attachment display/download
+- basic responsive layout
 
 Acceptance:
-- inbound message is stored and a convenience copy reaches configured external mailbox
+- the complete receive-and-read workflow works through the browser without manual API calls
 
-Storage remains authoritative even if forwarding fails.
+Do not add Compose, Sent, Reply, Forward, settings screens, a component framework, or a frontend state library unless an actual need is demonstrated.
 
-## Milestone 7 — outbound send
+## Milestone 4 — harden, deploy, and release v1
 
 Deliver:
-- send_email binding integration
-- Compose
-- sender identity validation
-- recipient limits
-- size limits
-- rate limits
-- Sent persistence
-- send error UI
+- HTML sanitization and remote-image behavior review
+- CSP and security headers
+- API input validation and size limits
+- malformed MIME and unauthorized-access tests
+- content-safe logging audit
+- production Wrangler configuration and environment template
+- repeatable per-instance deployment instructions
+- README installation and operating instructions
+- concise release notes
 
 Acceptance:
-- message sent from configured custom-domain identity
-- Sent copy exists
+- a clean instance can be configured and deployed without source-code edits
+- Access protects every mailbox and attachment route
+- inbound email remains durable when parsing or attachment handling encounters expected failures
+- lint, typecheck, unit/integration tests, and a deployment dry run pass
 
-## Milestone 8 — Reply / Forward
-
-Deliver:
-- Reply
-- Reply all
-- Forward
-- correct Message-ID
-- In-Reply-To
-- References
-- thread grouping
-
-Acceptance:
-- replies appear in the same thread in common external email providers
-
-## Milestone 9 — hardening
-
-Deliver:
-- HTML sanitization review
-- remote image behavior
-- CSP/security headers
-- attachment security review
-- API validation
-- send abuse controls
-- malformed MIME tests
-- logging audit
-
-Do not call v1 production-ready before this milestone.
-
-## Milestone 10 — deployment UX
-
-Deliver:
-- clean `wrangler` configuration
-- environment variable template
-- deployment documentation
-- optional deploy-to-Cloudflare flow
-- simple repeatable per-client deployment process
-
-Goal:
-A new instance should require configuration, not source-code edits.
-
-## Milestone 11 — v1 release
-
-Deliver:
-- README installation instructions
-- screenshots
-- architecture documentation
-- security notes
-- MIT license
-- changelog/release notes
+This milestone completes v1. There is no active post-v1 feature roadmap in this repository.
