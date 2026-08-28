@@ -4,6 +4,7 @@ node_modules/
 # Build output
 dist/
 .wrangler/
+.vite/
 
 # Local configuration and secrets
 .dev.vars
@@ -20,6 +21,7 @@ pnpm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+worker-configuration.d.ts
 
 # Tests
 coverage/

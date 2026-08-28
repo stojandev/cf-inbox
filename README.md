@@ -2,7 +2,7 @@
 
 A lightweight, single-tenant email inbox built entirely on Cloudflare.
 
-> **Status:** planning / pre-implementation.
+> **Status:** Milestone 0 — repository bootstrap.
 
 CF Inbox is intended for small businesses, personal domains, and client deployments that need a real custom-domain inbox without running an SMTP server or subscribing to a traditional mailbox provider.
 
@@ -99,6 +99,7 @@ See `docs/LICENSING.md`.
 - [Product scope](docs/PRODUCT.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Technical stack](docs/TECH_STACK.md)
+- [Local development](docs/LOCAL_DEVELOPMENT.md)
 - [Security](docs/SECURITY.md)
 - [UI](docs/UI.md)
 - [Deployment](docs/DEPLOYMENT.md)
